@@ -8,6 +8,7 @@
 \usepackage[T1]{fontenc} 
 % Fix size errors due to T1 in bbl file
 \usepackage{fix-cm}
+\usepackage[square]{natbib}
 %=============================================================================
 
 %========================= Todo notes  =======================================
@@ -22,7 +23,7 @@
 
 \usepackage{graphicx} % support the \includegraphics command and options
 \graphicspath{ {./img/} }
-\usepackage{tikz}
+%\usepackage{tikz}
 \usepackage{caption}
 \usepackage{epstopdf}
 %\usepackage{subcaption}
@@ -31,42 +32,42 @@
 
 %========================= Lstlistings =======================================
 
-\usepackage{listings}
-
-\lstdefinelanguage{algo}%
-{
-    alsoletter={\\,[,],/,*,\,},%
-    morekeywords=[2]{si, sinon, alors, finSi, pour tout, finPour, tantQue,%
-    finTantQue, ou, et, non, vrai, faux},%
-    otherkeywords={},%
-    morestring=[b]"
-}
-
-
-\lstset{% general command to set parameter(s)
-    basicstyle=\tiny,
-    % print whole listing small
-    keywordstyle=\tiny\color{red}\bfseries,
-    % bold BrickRed keywords
-    %identifierstyle=,
-    % nothing happens
-    commentstyle=\tiny\color{blue}, % blue comments
-    stringstyle=\ttfamily,
-    % typewriter type for strings
-    showstringspaces=false, 
-    numberstyle=\tiny, %size of the fonts that are used for the line-numbers     
-    numbers=left, %num ligne
-    stepnumber=1, %ttes les lignes
-    numbersep=10pt, %decala num ligne/ texte
-    %mathescape=true,%mode math ok
-    tabsize=4, %tabulation
-    frame=single,%encadrement simple
-    frameround=tttt,%encadrement
-    language=algo,
-    morecomment=[s]{/*}{*/},%commentaires speciaux en rouge
-    extendedchars=false,
-    breaklines=true,
-}
+%\usepackage{listings}
+%
+%\lstdefinelanguage{algo}%
+%{
+%    alsoletter={\\,[,],/,*,\,},%
+%    morekeywords=[2]{si, sinon, alors, finSi, pour tout, finPour, tantQue,%
+%    finTantQue, ou, et, non, vrai, faux},%
+%    otherkeywords={},%
+%    morestring=[b]"
+%}
+%
+%
+%\lstset{% general command to set parameter(s)
+%    basicstyle=\tiny,
+%    % print whole listing small
+%    keywordstyle=\tiny\color{red}\bfseries,
+%    % bold BrickRed keywords
+%    %identifierstyle=,
+%    % nothing happens
+%    commentstyle=\tiny\color{blue}, % blue comments
+%    stringstyle=\ttfamily,
+%    % typewriter type for strings
+%    showstringspaces=false, 
+%    numberstyle=\tiny, %size of the fonts that are used for the line-numbers     
+%    numbers=left, %num ligne
+%    stepnumber=1, %ttes les lignes
+%    numbersep=10pt, %decala num ligne/ texte
+%    %mathescape=true,%mode math ok
+%    tabsize=4, %tabulation
+%    frame=single,%encadrement simple
+%    frameround=tttt,%encadrement
+%    language=algo,
+%    morecomment=[s]{/*}{*/},%commentaires speciaux en rouge
+%    extendedchars=false,
+%    breaklines=true,
+%}
 
 %=============================================================================
 
@@ -166,7 +167,14 @@ bookmarksopen=true}
         (\insertshortinstitute)\hfill\insertframenumber/\inserttotalframenumber%
     \end{beamercolorbox}
 }
+%beamer bibliography colors
+\bibliographystyle{apalike} 
+\setbeamercolor*{bibliography item}{parent=item}
 
+\setbeamercolor*{bibliography entry author}{use=structure,fg=structure.fg}
+\setbeamercolor*{bibliography entry title}{use=normal text,fg=normal text.fg}
+\setbeamercolor*{bibliography entry location}{use=structure,fg=structure.fg!65!bg}
+\setbeamercolor*{bibliography entry note}{use=structure,fg=structure.fg!65!bg}
 %=============================================================================
 
 %========================= Title frame  ======================================
@@ -178,7 +186,6 @@ Guillaume Huard \and Bruno Raffin}
 %=============================================================================
 
 \begin{document}
-
 %========================= Title and outlines ================================
 \begin{frame}{ }
     \titlepage
@@ -206,7 +213,6 @@ Guillaume Huard \and Bruno Raffin}
     }
 }
 
-
 %=============================================================================
 
 %========================= Real presentation =================================
@@ -215,6 +221,7 @@ Guillaume Huard \and Bruno Raffin}
 \end{frame}
 
 \newsection{Context and motivations}
+
 \begin{frame}{Context}
     \begin{block}{Physical simulation}
         \hfill
@@ -231,38 +238,55 @@ Guillaume Huard \and Bruno Raffin}
     \pause
     \pause
     \pause
-    \begin{alertblock}{Sofa \cite{Allard07SOFA,Nesme09Preserving,Faure11Sparse}}
+    \begin{exampleblock}{Sofa \citep{Allard07SOFA,Nesme09Preserving,Faure11Sparse}}
         \begin{columns}
-            \column{.75\textwidth}
-            \begin{itemize}[<+->]
-                \item Scientific purpose $\Rightarrow$\alert{Precise}
-                \item Surgery training $\Rightarrow$\alert{Interactive} 
-                \item \alert{Abstract} simulation Framework
-                \item Combine any implementation for each step
-                \item Very complex class tree
+            \column{.5\textwidth}
+            \begin{itemize}
+                \item<5-> Scientific purpose: \alert<5-6>{Precise}
+                \item<6-> Surgery training: \alert<6>{Interactive} 
+                \item<8-> \alert<8>{Abstract} Framework
+                    \begin{itemize}
+                        \item Highly modular
+                        \item Deep class tree
+                    \end{itemize}
             \end{itemize}
-            \column{.2\textwidth}
-            \includegraphics[width=.9\textwidth]{sofa.png}
+            \column{.5\textwidth}
+            \begin{itemize}
+                \item<7-|alert@+-> High performances
+                    \vspace{.7cm}
+                \item<9-|alert@+-> Require profiling
+            \end{itemize}
         \end{columns}
-    \end{alertblock}
+    \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Previous parallelization of Sofa}
     \begin{itemize}[<+->]
-        \item Everton Hermann \cite{Hermann10Simulations} \\
+        \item Everton Hermann \citep{Hermann10Simulations} \\
             \begin{itemize}
                 \item Parallelization between objects using Kaapi
                 \item Good speedup (15 using 16 CPUs), better with GPUs
                 \item Not used in recent Sofa version 
             \end{itemize}
-        \item Julio Toss \cite{Toss12New}
-            \begin{itemize}
-                \item Works on algorithms out of Sofa then incorporate them
-                \item Ongoing work
-            \end{itemize}
+        \item Julio Toss \citep{Toss12New}
+        \item Works on algorithms out of Sofa then incorporate them
+        \item Ongoing work
         \item Current version openmp \#pragma for
+            \begin{itemize}
+                \item Sometimes better results without openmp
+                \item No previous analysis
+            \end{itemize}
     \end{itemize}
     \pause
+    \begin{alertblock}{Limits}
+        \begin{itemize}
+            \item Parallelization of small parts of Sofa
+            \item Bottlenecks are not clearly identified
+        \end{itemize}
+    \end{alertblock}
+\end{frame}
+\begin{frame}{Parallelization and scheduling schemes within Sofa}
+
     \begin{alertblock}{My approach}
         \begin{itemize}
             \item Focus on Sofa 
@@ -270,15 +294,15 @@ Guillaume Huard \and Bruno Raffin}
             \item Find a suitable way to fix them
         \end{itemize}
     \end{alertblock}
-
 \end{frame}
+
 
 \newsection{Analysis}
 
 \begin{frame}{First Analysis}
     \begin{block}{Methodology}
         \begin{itemize}
-            \item Performances counter using Likwid \cite{Treibig10LIKWID}
+            \item Performances counter using Likwid \citep{Treibig10LIKWID}
             \item Analysis at a global level (wrapper mode)
             \item Analysis at a local level (marker mode)
             \item Counters for all cache level, memory, Cycles per instructions
@@ -315,10 +339,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Advanced tools}
     \begin{itemize}
-        \item Vtunes \cite{Reinders05VTune}
-        \item HPCToolkit \cite{Adhianto10HPCTOOLKIT}
-        \item Paraver \cite{Pillet95PARAVER}
-        \item MemProf \cite{Lachaize12MemProf}
+        \item Vtunes \citep{Reinders05VTune}
+        \item HPCToolkit \citep{Adhianto10HPCTOOLKIT}
+        \item Paraver \citep{Pillet95PARAVER}
+        \item MemProf \citep{Lachaize12MemProf}
         \item \dots
     \end{itemize}
     \pause
@@ -334,10 +358,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Designing new tool}
     \begin{itemize}[<+->]
-        \item Analysing the memory usage \cite{Beniamine13Cartographier}
+        \item Analysing the memory usage \citep{Beniamine13Cartographier}
         \item Detect patterns (non)-linear acces, high pressure on small set of data \dots
         \item Instrumentation is slow, other methods (IBS ?)
-        \item Lot of data, need a suitable tool for visualisation \cite{Pagano13Trace,Dosimont14Trace}
+        \item Lot of data, need a suitable tool for visualisation \citep{Pagano13Trace,Dosimont14Trace}
     \end{itemize}
 \end{frame}
 
@@ -360,7 +384,6 @@ Guillaume Huard \and Bruno Raffin}
 \newHsection{Bibliography}
 \setboolean{sectiontoc}{false} 
 %
-\bibliographystyle{apalike} 
 \bibliography{presentation}
 
 %========================= Backup slides =====================================
