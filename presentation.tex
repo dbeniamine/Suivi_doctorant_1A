@@ -8,7 +8,6 @@
 \usepackage[T1]{fontenc} 
 % Fix size errors due to T1 in bbl file
 \usepackage{fix-cm}
-
 %=============================================================================
 
 %========================= Todo notes  =======================================
@@ -232,7 +231,7 @@ Guillaume Huard \and Bruno Raffin}
     \pause
     \pause
     \pause
-    \begin{alertblock}{Sofa \cite{Allard07SOFA,Faure11Sparse,Nesme09Preserving}}
+    \begin{alertblock}{Sofa \cite{Allard07SOFA,Nesme09Preserving,Faure11Sparse}}
         \begin{columns}
             \column{.75\textwidth}
             \begin{itemize}[<+->]
@@ -250,10 +249,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Previous parallelization of Sofa}
     \begin{itemize}[<+->]
-        \item Everton Hermann\cite{Hermann10Simulations} \\
+        \item Everton Hermann \cite{Hermann10Simulations} \\
             \begin{itemize}
-                \item Parallelization between objects using Athapascan/Kaapi
-                \item Up to $30\%$ gain \todo{check this number}
+                \item Parallelization between objects using Kaapi
+                \item Good speedup (15 using 16 CPUs), better with GPUs
                 \item Not used in recent Sofa version 
             \end{itemize}
         \item Julio Toss \cite{Toss12New}
@@ -317,17 +316,17 @@ Guillaume Huard \and Bruno Raffin}
 \begin{frame}{Advanced tools}
     \begin{itemize}
         \item Vtunes \cite{Reinders05VTune}
-        \item HPCToolkit \cite{DeRose01Hardware}
-            \todo{Ref bibtex KO}
+        \item HPCToolkit \cite{Adhianto10HPCTOOLKIT}
         \item Paraver \cite{Pillet95PARAVER}
+        \item MemProf \cite{Lachaize12MemProf}
         \item \dots
     \end{itemize}
     \pause
     \begin{alertblock}{Limitations}
         \begin{itemize}
             \item Complex to use
-            \item  Focus on the CPU or on the runtime (MPI, etc.)
-            \item Must problems come from the memory
+            \item Focus on the architecture or on the runtime (MPI, etc.)
+            \item Most problems come from the memory
             \item We need a different kind of tools
         \end{itemize}
     \end{alertblock}
@@ -335,11 +334,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Designing new tool}
     \begin{itemize}[<+->]
-        \item Analysing the memory usage\cite{Beniamine13Cartographier}
-        \item Instrumentation is slow, other methods ? \cite{Lachaize12MemProf}
-            \todo{Read that paper !!!}
-        \item Lot of data, need a suitable tool for visualisation
-            \todo{Ref Damien}
+        \item Analysing the memory usage \cite{Beniamine13Cartographier}
+        \item Detect patterns (non)-linear acces, high pressure on small set of data \dots
+        \item Instrumentation is slow, other methods (IBS ?)
+        \item Lot of data, need a suitable tool for visualisation \cite{Pagano13Trace,Dosimont14Trace}
     \end{itemize}
 \end{frame}
 
@@ -362,7 +360,7 @@ Guillaume Huard \and Bruno Raffin}
 \newHsection{Bibliography}
 \setboolean{sectiontoc}{false} 
 %
-\bibliographystyle{plain} % plain-fr si rapport en français
+\bibliographystyle{apalike} 
 \bibliography{presentation}
 
 %========================= Backup slides =====================================
