@@ -8,7 +8,6 @@
 \usepackage[T1]{fontenc} 
 % Fix size errors due to T1 in bbl file
 \usepackage{fix-cm}
-\usepackage[square]{natbib}
 %=============================================================================
 
 %========================= Todo notes  =======================================
@@ -79,12 +78,12 @@
     backref=true, %permet d'ajouter des liens dans...
     pagebackref=true,%...les bibliographies
     hyperindex=true, %ajoute des liens dans les index.
-    colorlinks=true, %colorise les liens
+    colorlinks=false, %colorise les liens
     breaklinks=true, %permet le retour à la ligne dans les liens trop longs
     urlcolor= blue, %couleur des hyperliens
     linkcolor= black, %couleur des liens internes
     bookmarks=true, %créé des signets pour Acrobat
-bookmarksopen=true} 
+bookmarksopen=true,} 
 
 %=============================================================================
 
@@ -167,14 +166,6 @@ bookmarksopen=true}
         (\insertshortinstitute)\hfill\insertframenumber/\inserttotalframenumber%
     \end{beamercolorbox}
 }
-%beamer bibliography colors
-\bibliographystyle{apalike} 
-\setbeamercolor*{bibliography item}{parent=item}
-
-\setbeamercolor*{bibliography entry author}{use=structure,fg=structure.fg}
-\setbeamercolor*{bibliography entry title}{use=normal text,fg=normal text.fg}
-\setbeamercolor*{bibliography entry location}{use=structure,fg=structure.fg!65!bg}
-\setbeamercolor*{bibliography entry note}{use=structure,fg=structure.fg!65!bg}
 %=============================================================================
 
 %========================= Title frame  ======================================
@@ -238,7 +229,7 @@ Guillaume Huard \and Bruno Raffin}
     \pause
     \pause
     \pause
-    \begin{exampleblock}{Sofa \citep{Allard07SOFA,Nesme09Preserving,Faure11Sparse}}
+    \begin{exampleblock}{Sofa \cite{Allard07SOFA,Nesme09Preserving,Faure11Sparse}}
         \begin{columns}
             \column{.5\textwidth}
             \begin{itemize}
@@ -262,13 +253,13 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Previous parallelization of Sofa}
     \begin{itemize}[<+->]
-        \item Everton Hermann \citep{Hermann10Simulations} \\
+        \item Everton Hermann \cite{Hermann10Simulations} \\
             \begin{itemize}
                 \item Parallelization between objects using Kaapi
                 \item Good speedup (15 using 16 CPUs), better with GPUs
                 \item Not used in recent Sofa version 
             \end{itemize}
-        \item Julio Toss \citep{Toss12New}
+        \item Julio Toss \cite{Toss12New}
         \item Works on algorithms out of Sofa then incorporate them
         \item Ongoing work
         \item Current version openmp \#pragma for
@@ -302,7 +293,7 @@ Guillaume Huard \and Bruno Raffin}
 \begin{frame}{First Analysis}
     \begin{block}{Methodology}
         \begin{itemize}
-            \item Performances counter using Likwid \citep{Treibig10LIKWID}
+            \item Performances counter using Likwid \cite{Treibig10LIKWID}
             \item Analysis at a global level (wrapper mode)
             \item Analysis at a local level (marker mode)
             \item Counters for all cache level, memory, Cycles per instructions
@@ -339,10 +330,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Advanced tools}
     \begin{itemize}
-        \item Vtunes \citep{Reinders05VTune}
-        \item HPCToolkit \citep{Adhianto10HPCTOOLKIT}
-        \item Paraver \citep{Pillet95PARAVER}
-        \item MemProf \citep{Lachaize12MemProf}
+        \item Vtunes \cite{Reinders05VTune}
+        \item HPCToolkit \cite{Adhianto10HPCTOOLKIT}
+        \item Paraver \cite{Pillet95PARAVER}
+        \item MemProf \cite{Lachaize12MemProf}
         \item \dots
     \end{itemize}
     \pause
@@ -358,10 +349,10 @@ Guillaume Huard \and Bruno Raffin}
 
 \begin{frame}{Designing new tool}
     \begin{itemize}[<+->]
-        \item Analysing the memory usage \citep{Beniamine13Cartographier}
+        \item Analysing the memory usage \cite{Beniamine13Cartographier}
         \item Detect patterns (non)-linear acces, high pressure on small set of data \dots
         \item Instrumentation is slow, other methods (IBS ?)
-        \item Lot of data, need a suitable tool for visualisation \citep{Pagano13Trace,Dosimont14Trace}
+        \item Lot of data, need a suitable tool for visualisation \cite{Pagano13Trace,Dosimont14Trace}
     \end{itemize}
 \end{frame}
 
@@ -384,6 +375,7 @@ Guillaume Huard \and Bruno Raffin}
 \newHsection{Bibliography}
 \setboolean{sectiontoc}{false} 
 %
+\bibliographystyle{apalike} 
 \bibliography{presentation}
 
 %========================= Backup slides =====================================
