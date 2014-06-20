@@ -173,7 +173,16 @@ bookmarksopen=true,}
 %\subtitle{Parallelization and scheduling schemes within SOFA}
 \author[Beniamine David]{Beniamine David\\ Under the supervision of \\
 Guillaume Huard \and Bruno Raffin}
-\institute[MOAIS]{Univ. Grenoble alpes, Lig - Inria team MOAIS} 
+%\institute[MOAIS]{Univ. Grenoble alpes, Lig - Inria team MOAIS} 
+\institute[MOAIS]{
+        \includegraphics[width=.32\textwidth]{img/logoUJF.jpg}
+        \qquad
+        \qquad
+        \includegraphics[width=.15\textwidth]{img/LIG_coul.jpg}
+        \\
+        \includegraphics[width=.22\textwidth]{img/inria.jpg}
+        \includegraphics[width=.4\textwidth]{img/moais.png}
+} 
 %=============================================================================
 
 \begin{document}
@@ -260,30 +269,39 @@ Guillaume Huard \and Bruno Raffin}
                 \item Not used in recent Sofa version 
             \end{itemize}
         \item Julio Toss \cite{Toss12New}
-        \item Works on algorithms out of Sofa then incorporate them
-        \item Ongoing work
+            \begin{itemize}
+                \item Works on algorithms out of Sofa then incorporate them
+                \item Ongoing work
+            \end{itemize}
         \item Current version openmp \#pragma for
             \begin{itemize}
                 \item Sometimes better results without openmp
                 \item No previous analysis
             \end{itemize}
     \end{itemize}
-    \pause
-    \begin{alertblock}{Limits}
-        \begin{itemize}
-            \item Parallelization of small parts of Sofa
-            \item Bottlenecks are not clearly identified
-        \end{itemize}
-    \end{alertblock}
+    \uncover<11>
+    {
+        \begin{alertblock}{Limits}
+            \begin{itemize}
+                \item Parallelization of small parts of Sofa
+                \item Bottlenecks are not clearly identified
+            \end{itemize}
+        \end{alertblock}
+    }
 \end{frame}
 \begin{frame}{Parallelization and scheduling schemes within Sofa}
-
-    \begin{alertblock}{My approach}
+    \pause
+    \begin{block}{Approach}
         \begin{itemize}
             \item Focus on Sofa 
-            \item \alert{Identify the performances issues}
-            \item Find a suitable way to fix them
+            \item Identify performance issues
+            \item Find Parts of code which can be improved
+            \item Without going directly deep on the code 
         \end{itemize}
+    \end{block}
+    \pause
+    \begin{alertblock}{Objectives (long term)}
+        Describe a reproducible methodology to optimize complex applications
     \end{alertblock}
 \end{frame}
 
@@ -291,82 +309,172 @@ Guillaume Huard \and Bruno Raffin}
 \newsection{Analysis}
 
 \begin{frame}{First Analysis}
-    \begin{block}{Methodology}
+    \begin{block}{Questions}
         \begin{itemize}
-            \item Performances counter using Likwid \cite{Treibig10LIKWID}
-            \item Analysis at a global level (wrapper mode)
-            \item Analysis at a local level (marker mode)
-            \item Counters for all cache level, memory, Cycles per instructions
-            \item Performance metrics from Sofa (Simulation time, FPS)
-            \item 4 representative scenes
+            \item What are we looking for ?
+            \item How can we identify it ?
+            \item What kind of tools should we use ?
+            \item What metrics are relevants ?
         \end{itemize}
     \end{block}
     \pause
-    \begin{exampleblock}{First results}
+    \begin{alertblock}{Idea}
+        Use performance counter for an overview exploration
+    \end{alertblock}
+    \pause
+    \begin{exampleblock}{Challenges}
         \begin{itemize}
-            \item Hundred of plots
-            \item Lot of work to correlate them / keep only the interesting ones
+            \item Lot of data
+            \item How to correlate different metrics ?
         \end{itemize}
     \end{exampleblock}
+ %   \begin{block}{Methodology}
+ %       \begin{itemize}
+ %           \item Performances counter using Likwid \cite{Treibig10LIKWID}
+ %           \item Analysis at a global level (wrapper mode)
+ %           \item Analysis at a local level (marker mode)
+ %           \item Counters for all cache level, memory, Cycles per instructions
+ %           \item Performance metrics from Sofa (Simulation time, FPS)
+ %           \item 4 representative scenes
+ %       \end{itemize}
+ %   \end{block}
+ %   \pause
+ %   \begin{exampleblock}{First results}
+ %       \begin{itemize}
+ %           \item Hundred of plots
+ %           \item Lot of work to correlate them / keep only the interesting ones
+ %       \end{itemize}
+ %   \end{exampleblock}
 \end{frame}
 
 \begin{frame}{Results}
 
-    \only<1>{\includegraphics[width=0.9\textwidth]{img/Runtime_ratio1.png}}
-    \only<2>{\includegraphics[width=.9\textwidth]{img/memory_traffic_loc2.png}}
-    \only<3->{\includegraphics[width=.9\textwidth]{img/memory_traffic_loc1.png}}
-    \only<4>
-    {
-        \begin{textblock}{14}(1,7)
+    \only<1-2>{\includegraphics[width=0.9\textwidth]{img/Runtime_ratio1.png}}
+    \only<3-4>{\includegraphics[width=.9\textwidth]{img/memory_traffic_loc2.png}}
+    \only<5->{\includegraphics[width=.9\textwidth]{img/memory_traffic_loc1.png}}
+    \begin{textblock}{14}(1,5)
+        \only<2>{
+            \begin{block}{Observations}
+                \begin{itemize}
+                    \item ApplyJ and ApplyJT vec represent an important part
+                        of the execution
+                    \item The speedup is only about 2 with 4 cores
+                    \item High CPI (not shown here)
+                        \begin{itemize}
+                            \item Wrong prediction (pipeline not fill)
+                            \item Bad memory use
+                        \end{itemize}
+                    \item A significative part of the simulation is missing
+                \end{itemize}
+            \end{block}
+        }
+        \only<4>{
+            \begin{block}{Observations}
+                \begin{itemize}
+                    \item ApplyJ and ApplyJT vec uses a lot of L2 cache
+                    \item The amount of data doesn't change for openmp version
+                    \item Memory seems to be shared between threads
+                \end{itemize}
+            \end{block}
+        }
+        \only<6->
+        {
             \begin{alertblock}{First conclusions}
                 \begin{itemize}
+                    \item High use of L2 (private) cache
+                    \item Low bandwith
+                    \item High CPI 
                     \item Maybe a problem of false sharing
                     \item We need more informations
+                        \begin{itemize}
+                            \item Memory use by threads 
+                            \item Memory access patterns
+                        \end{itemize}
+
                 \end{itemize}
             \end{alertblock}
-        \end{textblock}
+        }
+    \end{textblock}
+\end{frame}
+
+\begin{frame}{Other tools}
+    \begin{block}{CPU oriented}
+        \begin{columns}
+            \column{.51\textwidth}
+            \begin{itemize}
+                \item PAPI \cite{Weaver13PAPI}
+                \item Oprofile \cite{Oprofile}
+                \item Vtunes \cite{Reinders05VTune}
+                \item \dots
+            \end{itemize}
+            \column{.35\textwidth}
+            \begin{alertblock}{Limits}
+                Answer the same questions
+            \end{alertblock}
+        \end{columns}
+    \end{block}
+    \uncover<2->
+    {
+        \begin{block}{Others}
+            \begin{columns}
+                \column{.6\textwidth}
+                \begin{itemize}
+                    \item HPCToolkit \cite{Adhianto10HPCTOOLKIT}
+                    \item Paraver \cite{Pillet95PARAVER}
+                    \item MemProf \cite{Lachaize12MemProf}
+                \end{itemize}
+                \column{.25\textwidth}
+                \begin{alertblock}{Limits}
+                    Answer other questions \\but not the one we asked
+                \end{alertblock}
+            \end{columns}
+
+        \end{block}
     }
 \end{frame}
-
-\begin{frame}{Advanced tools}
-    \begin{itemize}
-        \item Vtunes \cite{Reinders05VTune}
-        \item HPCToolkit \cite{Adhianto10HPCTOOLKIT}
-        \item Paraver \cite{Pillet95PARAVER}
-        \item MemProf \cite{Lachaize12MemProf}
-        \item \dots
-    \end{itemize}
-    \pause
-    \begin{alertblock}{Limitations}
-        \begin{itemize}
-            \item Complex to use
-            \item Focus on the architecture or on the runtime (MPI, etc.)
-            \item Most problems come from the memory
-            \item We need a different kind of tools
-        \end{itemize}
-    \end{alertblock}
-\end{frame}
+\newsection{Current work and perspective}
 
 \begin{frame}{Designing new tool}
-    \begin{itemize}[<+->]
-        \item Analysing the memory usage \cite{Beniamine13Cartographier}
-        \item Detect patterns (non)-linear acces, high pressure on small set of data \dots
-        \item Instrumentation is slow, other methods (IBS ?)
-        \item Lot of data, need a suitable tool for visualisation \cite{Pagano13Trace,Dosimont14Trace}
+    \begin{itemize}
+        \item Detect patterns
+            \begin{itemize}
+                \item Dispersion between structures
+                \item Dispersion inside a structure
+                \item Frequency
+                \item Linearity
+            \end{itemize}
+        \item Detect sharing
+            \begin{itemize}
+                \item Concurrent access
+                \item Shared structures
+            \end{itemize}
     \end{itemize}
 \end{frame}
-
-\newsection{Conclusions}
+\begin{frame}{Heapinfo \cite{Beniamine13Cartographier}}
+    \begin{figure}
+        \centering
+        \includegraphics[width=.65\linewidth]{img/mat_naif_50_42_0_none_normal.pdf}
+    \end{figure}
+\end{frame}
 
 \newcounter{finalframe}
 \setcounter{finalframe}{\value{framenumber}}
 %Last numbered frame go here
-
-\begin{frame}{Original approach}
-    \todo{blabla}
+\begin{frame}{Perspectives}
+    \begin{itemize}
+        \item Instrumentation is slow
+            \begin{itemize}
+                \item Other methods ?
+                \item Larger grain ?
+            \end{itemize}
+        \item Lot of data
+            \begin{itemize}
+                \item How can we analyse them ?
+                \item What are the relevAnt metrics ?
+                \item How can we visualize them ? 
+            \end{itemize}
+    \end{itemize}
 \end{frame}
-
-
 
 %=============================================================================
 
